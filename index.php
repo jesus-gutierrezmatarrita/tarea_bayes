@@ -20,4 +20,5 @@
     </div>
     </nav>
 </body>
+<?php include('scripts.php') ?>
 <?php include('footer.php') ?>
