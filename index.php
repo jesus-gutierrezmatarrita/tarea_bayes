@@ -1,4 +1,4 @@
-<?php include('header.php') ?>
+<?php include('head.php') ?>
 
         <div class="container">
             <h1 class="mt-5">Objetivos de desarrollo</h1>

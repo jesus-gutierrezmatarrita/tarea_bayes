@@ -21,10 +21,13 @@
              <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/">Enunciado</a>
+                            <a class="nav-link" aria-current="page" href="/">Enunciado</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="formulario1.php">Formulario 1</a>
+                            <a class="nav-link" href="learning-style.php">Estilos de aprendizaje</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="guess-gender.php">Adivinar género</a>
                         </li>
                     </ul>
                 </div>

@@ -3,8 +3,7 @@
   <!-- Credits -->
   <div class="container">
     <span class="text-muted">
-        © 2022 Estudiante: Jesús Antonio Gutiérrez Matarrita. Si desea revisar el código en Github, vaya
-        <a class="text-dark" href="https://github.com/jesus-gutierrezmatarrita/tarea_bayes" target="_blank" rel="noopener noreferrer">aquí</a>
+        © 2022 Estudiante: Jesús Antonio Gutiérrez Matarrita.
     </span>
   </div>
   <!-- Credits -->

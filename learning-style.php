@@ -1,4 +1,99 @@
-<?php include('header.php') ?>
+<?php include('head.php') ?>
+
+<?php
+/*
+    Examen ampliación Sistemas expertos para la administración
+    Jesús Gutiérrez Matarrita
+    B53280
+    2022
+*/
+
+error_reporting(E_ERROR | E_PARSE);
+
+if (isset($_POST["calculate"])) {
+        //connecting to database
+        require_once("database-connection.php");
+
+        $conn = base::connection();
+
+        //final result variable
+        $style = "";
+        $minimum = 300000.0;
+        $prior_prob_Ac = 14/77;
+        $prior_prob_As = 21/77;
+        $prior_prob_Co = 21/77;
+        $prior_prob_Di = 21/77;
+        $frecuency_product_acomodador = 1;
+        $Producto_Frecuencia_asimilador = 1;
+        $Producto_Frecuencia_convergente = 1;
+        $Producto_Frecuencia_divergente = 1;
+        //save data chosen by the user
+        $recinto = $_POST["Recinto"];
+        $promedio = $_POST["Promedio"];
+        $sexo = $_POST["sexo"];
+        //Sentencias SQL para traer los valores de una tabla especifica de la base de datos
+  $sqlSexo = "SELECT * FROM  prob_sexo;";
+  $querySexo = mysqli_query($connection, $sqlSexo);
+  $sqlPromedio = "SELECT * FROM  prob_promedio;";
+  $queryPromedio = mysqli_query($connection, $sqlPromedio);
+  $sqlRecinto = "SELECT * FROM  prob_recinto;";
+  $queryRecinto = mysqli_query($connection, $sqlRecinto);
+  //Sentencias while que recorre todos los valores traidos desde la base de datos
+  while ($Row = mysqli_fetch_array($querySexo)) {
+      //sentencias if para escoger las frecuencias de cada variable y
+      //almacenarlas en una variable para calcular el producto de las frecuencias        
+      if ($Row['criterio'] == 'ACOMODADOR' && $Row['sexo'] == $Sexo) {
+          $Producto_Frecuencia_Ac*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'ASIMILADOR' && $Row['sexo'] == $Sexo) {
+          $Producto_Frecuencia_As*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'CONVERGENTE' && $Row['sexo'] == $Sexo) {
+          $Producto_Frecuencia_Co*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'DIVERGENTE' && $Row['sexo'] == $Sexo) {
+          $Producto_Frecuencia_Di*=$Row['probabilidad'];
+      };        
+  }
+  while ($Row = mysqli_fetch_array($queryPromedio)) {
+      //sentencias if para escoger las frecuencias de cada variable y
+      //almacenarlas en una variable para calcular el producto de las frecuencias        
+      if ($Row['criterio'] == 'ACOMODADOR' && $Row['promedio'] == $Promedio) {
+          $Producto_Frecuencia_Ac*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'ASIMILADOR' && $Row['promedio'] == $Promedio) {
+          $Producto_Frecuencia_As*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'CONVERGENTE' && $Row['promedio'] == $Promedio) {
+          $Producto_Frecuencia_Co*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'DIVERGENTE' && $Row['promedio'] == $Promedio) {
+          $Producto_Frecuencia_Di*=$Row['probabilidad'];
+      }; 
+  }
+  while ($Row = mysqli_fetch_array($queryRecinto)) {
+      //sentencias if para escoger las frecuencias de cada variable y
+      //almacenarlas en una variable para calcular el producto de las frecuencias        
+      if ($Row['criterio'] == 'ACOMODADOR' && $Row['recinto'] == $Recinto) {
+          $Producto_Frecuencia_Ac*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'ASIMILADOR' && $Row['recinto'] == $Recinto) {
+          $Producto_Frecuencia_As*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'CONVERGENTE' && $Row['recinto'] == $Recinto) {
+          $Producto_Frecuencia_Co*=$Row['probabilidad'];
+      } else if ($Row['criterio'] == 'DIVERGENTE' && $Row['recinto'] == $Recinto) {
+          $Producto_Frecuencia_Di*=$Row['probabilidad'];
+      }; 
+  }
+  //sentencia if para determinar cual resultado es más probable
+  if ((($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_As*$Prior_prob_As))
+    && (($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_Co*$Prior_prob_Co))
+    && (($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
+    $Estilo = 'Acomodador';
+  } else if ((($Producto_Frecuencia_As*$Prior_prob_As) > ($Producto_Frecuencia_Co*$Prior_prob_Co))
+    && (($Producto_Frecuencia_As*$Prior_prob_As) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
+    $Estilo = 'Asimilador';
+  } else if ((($Producto_Frecuencia_Co*$Prior_prob_Co) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
+    $Estilo = 'Convergente';
+  } else {
+    $Estilo = 'Divergente';
+  };
+}
+
+?>
 
 <main class="flex-shrink-0">
     <div class="container">
@@ -45,34 +140,34 @@
         </div>
         <br>
 
-        <form name="estilo">
+        <form name="learning-style" action="learning-style.php" method="post">
             <table class="table table-striped table-responsive">
                 <tbody>
                 <tr>
                     <td style="vertical-align: top; width: 25%;">
-                    <select name="c1">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    </select>
-            discerniendo<br>
+                        <select name="c1">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                        </select>
+                        discerniendo<br>
                     </td>
                     <td style="vertical-align: top; width: 25%;">
-                    <select name="c2">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    </select>
-            ensayando<br>
+                        <select name="c2">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                        </select>
+                        ensayando<br>
                     </td>
                     <td style="vertical-align: top;">
-                    <select name="c3">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
+                        <select name="c3">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
                     </select>
             involucrándome</td>
                     <td style="vertical-align: top;">
@@ -188,12 +283,7 @@
                 </tr>
                 <tr>
                     <td style="vertical-align: top; width: 25%;">
-                    <select name="c17">
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    </select>
+                    <select name="c17">Adivinar
             intuitivamente </td>
                     <td style="vertical-align: top; width: 25%;">
                     <select name="c18">
@@ -361,33 +451,46 @@
             </table>
         <br>
         
-        <button class="btn btn-primary" onclick="calcular()">Calcular</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <button name="calculate" class="btn btn-primary">Calcular</button>
 
         </form>
 
-        <form name="final" action="estilo.php" method="post">
-            <input name="EC" maxlength="12" size="12" type="hidden" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <input name="RO" maxlength="12" size="12" type="hidden" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-            <input name="CA" maxlength="12" size="12" type="hidden" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-            <input name="EA" maxlength="12" size="12" type="hidden" ><br>
-
-            <input type="hidden" maxlength="3" size="3" name="CAEC">&nbsp;&nbsp;&nbsp;&nbsp;
-            <input type="hidden" maxlength="3" size="3" name="EAOR">&nbsp;<br><br>
-
-            ESTILO&nbsp;&nbsp; <input maxlength="12" size="12" name="ESTILOFINAL">
-            <br>
-            Escriba su carnet:<input type="Text" name="carnet"><br>
-            Sexo:<select name="sex" value="Sexo">
-                    <option value="f">Femenino</option>
-                    <option value="m">Masculino</option>
-                    </select><br>
-            Escoja su recinto:<select name="recinto" value="Recinto">
-                    <option value="p">Paraíso</option>
-                    <option value="t">Turrialba</option>
-                    </select><br>
-            <font color="#ff0000"><font size="4"> -------------------------------------------------</font></font><input value="ENVIAR" type="submit">
+        <form name="final" action="learning-style.php" method="post">
+                <?php echo "<font size='3'><b>ESTILO: $style  </b></font>" ?>
         </form>
+
+        <form name="final" action="estilo.php" method="post" class="w3-display-middle">
+    <br>
+    <div class="w3-panel w3-border w3-round-xxlarge">
+      <h2>Estilo de aprendizaje</h2>
+      <h4>Ingrese los datos que se le solicitan a continuación<br> y presione el boton "Adivinar" para que el sistema <br>le muestre su estilo de aprendizaje</h4>  
     </div>
+    <br>
+    <div class="w3-panel w3-border w3-round-xxlarge">
+      <div class="w3-panel w3-border w3-round-xxlarge">
+        Escoja su recinto:
+        <select name="Recinto" value="Recinto">
+          <option value='Paraiso'>Paraíso</option>
+          <option value='Turrialba'>Turrialba</option>
+        </select>
+      </div>
+      <div class="w3-panel w3-border w3-round-xxlarge">
+        Promedio (utilizar "." en lugar de  ","):
+        <input class="w3-input" type="Text" name="Promedio"></p>
+      </div>
+      <div class="w3-panel w3-border w3-round-xxlarge">
+        Sexo:
+        <select name="Sexo" value="Sexo">
+          <option value='F'>Femenino</option>
+          <option value='M'>Masculino</option>
+        </select>
+      </div>
+      <input class="w3-button w3-white w3-border w3-border-red w3-round-large" name="Adivinar" value="Adivinar" type="submit">
+      <br><br>
+      <?php echo "<font size='3'><b>ESTILO: $Estilo </b></font>" ?></p>
+      <br><br><br>
+    </div>
+  </form>
 </main>
 
 <?php include('footer.php') ?>
