@@ -11,88 +11,85 @@
 error_reporting(E_ERROR | E_PARSE);
 
 if (isset($_POST["calculate"])) {
-        //connecting to database
-        require_once("database-connection.php");
+    //connecting to database
+    require_once("database-connection.php");
+    $conn = base::connection();
 
-        $conn = base::connection();
-
-        //final result variable
-        $style = "";
-        $minimum = 300000.0;
-        $prior_prob_Ac = 14/77;
-        $prior_prob_As = 21/77;
-        $prior_prob_Co = 21/77;
-        $prior_prob_Di = 21/77;
-        $frecuency_product_acomodador = 1;
-        $Producto_Frecuencia_asimilador = 1;
-        $Producto_Frecuencia_convergente = 1;
-        $Producto_Frecuencia_divergente = 1;
-        //save data chosen by the user
-        $recinto = $_POST["Recinto"];
-        $promedio = $_POST["Promedio"];
-        $sexo = $_POST["sexo"];
-        //Sentencias SQL para traer los valores de una tabla especifica de la base de datos
-  $sqlSexo = "SELECT * FROM  prob_sexo;";
-  $querySexo = mysqli_query($connection, $sqlSexo);
-  $sqlPromedio = "SELECT * FROM  prob_promedio;";
-  $queryPromedio = mysqli_query($connection, $sqlPromedio);
-  $sqlRecinto = "SELECT * FROM  prob_recinto;";
-  $queryRecinto = mysqli_query($connection, $sqlRecinto);
-  //Sentencias while que recorre todos los valores traidos desde la base de datos
-  while ($Row = mysqli_fetch_array($querySexo)) {
-      //sentencias if para escoger las frecuencias de cada variable y
-      //almacenarlas en una variable para calcular el producto de las frecuencias        
-      if ($Row['criterio'] == 'ACOMODADOR' && $Row['sexo'] == $Sexo) {
-          $Producto_Frecuencia_Ac*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'ASIMILADOR' && $Row['sexo'] == $Sexo) {
-          $Producto_Frecuencia_As*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'CONVERGENTE' && $Row['sexo'] == $Sexo) {
-          $Producto_Frecuencia_Co*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'DIVERGENTE' && $Row['sexo'] == $Sexo) {
-          $Producto_Frecuencia_Di*=$Row['probabilidad'];
-      };        
-  }
-  while ($Row = mysqli_fetch_array($queryPromedio)) {
-      //sentencias if para escoger las frecuencias de cada variable y
-      //almacenarlas en una variable para calcular el producto de las frecuencias        
-      if ($Row['criterio'] == 'ACOMODADOR' && $Row['promedio'] == $Promedio) {
-          $Producto_Frecuencia_Ac*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'ASIMILADOR' && $Row['promedio'] == $Promedio) {
-          $Producto_Frecuencia_As*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'CONVERGENTE' && $Row['promedio'] == $Promedio) {
-          $Producto_Frecuencia_Co*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'DIVERGENTE' && $Row['promedio'] == $Promedio) {
-          $Producto_Frecuencia_Di*=$Row['probabilidad'];
-      }; 
-  }
-  while ($Row = mysqli_fetch_array($queryRecinto)) {
-      //sentencias if para escoger las frecuencias de cada variable y
-      //almacenarlas en una variable para calcular el producto de las frecuencias        
-      if ($Row['criterio'] == 'ACOMODADOR' && $Row['recinto'] == $Recinto) {
-          $Producto_Frecuencia_Ac*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'ASIMILADOR' && $Row['recinto'] == $Recinto) {
-          $Producto_Frecuencia_As*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'CONVERGENTE' && $Row['recinto'] == $Recinto) {
-          $Producto_Frecuencia_Co*=$Row['probabilidad'];
-      } else if ($Row['criterio'] == 'DIVERGENTE' && $Row['recinto'] == $Recinto) {
-          $Producto_Frecuencia_Di*=$Row['probabilidad'];
-      }; 
-  }
-  //sentencia if para determinar cual resultado es más probable
-  if ((($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_As*$Prior_prob_As))
-    && (($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_Co*$Prior_prob_Co))
-    && (($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
-    $Estilo = 'Acomodador';
-  } else if ((($Producto_Frecuencia_As*$Prior_prob_As) > ($Producto_Frecuencia_Co*$Prior_prob_Co))
-    && (($Producto_Frecuencia_As*$Prior_prob_As) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
-    $Estilo = 'Asimilador';
-  } else if ((($Producto_Frecuencia_Co*$Prior_prob_Co) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
-    $Estilo = 'Convergente';
-  } else {
-    $Estilo = 'Divergente';
-  };
+    //Variables que guardan las opciones seleccionadas en la tabla del formulario
+    $EC = (int)$_POST["c5"] + (int)$_POST["c9"] + (int)$_POST["c13"] + (int)$_POST["c17"] + (int)$_POST["c25"] + (int)$_POST["c29"];
+    $OR = (int)$_POST["c2"] + (int)$_POST["c10"] + (int)$_POST["c22"] + (int)$_POST["c26"] + (int) $_POST["c30"] + (int)$_POST["c34"];
+    $CA = (int)$_POST["c7"] + (int)$_POST["c11"] + (int)$_POST["c15"] + (int)$_POST["c19"] + (int) $_POST["c31"] + (int)$_POST["c35"];
+    $EA = (int)$_POST["c4"] + (int)$_POST["c12"] + (int)$_POST["c24"] + (int)$_POST["c28"] + (int)$_POST["c32"] + (int)$_POST["c36"];
+    //Declaracion de la variable del resultado final
+    $style = "";
+    $Minimo = 400000.0;
+    $Prior_prob_Ac = 14/77;
+    $Prior_prob_As = 21/77;
+    $Prior_prob_Co = 21/77;
+    $Prior_prob_Di = 21/77;
+    $Producto_Frecuencia_Ac = 1;
+    $Producto_Frecuencia_As = 1;
+    $Producto_Frecuencia_Co = 1;
+    $Producto_Frecuencia_Di = 1;
+    //Sentencia SQL para traer los valores de una tabla especifica de la base de datos
+    $sql = "SELECT * FROM EstilosProb";
+    $query = mysqli_query($conn, $sql);
+    //while que recorre todos los valores traidos desde la base de datos y
+    //les asigna un valor numérico 
+    while ($Row = mysqli_fetch_array($query)) {
+            //sentencias if para escoger las frecuencias de cada variable y
+            //almacenarlas en una variable para calcular el producto de las frecuencias        
+            if ($Row['estilo'] == 'ACOMODADOR' && $Row['valor'] == $CA) {
+                    $Producto_Frecuencia_Ac*=$Row['ca'];
+            } else if ($Row['estilo'] == 'ASIMILADOR' && $Row['valor'] == $CA) {
+                    $Producto_Frecuencia_As*=$Row['ca'];
+            } else if ($Row['estilo'] == 'CONVERGENTE' && $Row['valor'] == $CA) {
+                    $Producto_Frecuencia_Co*=$Row['ca'];
+            } else if ($Row['estilo'] == 'DIVERGENTE' && $Row['valor'] == $CA) {
+                    $Producto_Frecuencia_Di*=$Row['ca'];
+            };
+            if ($Row['estilo'] == 'ACOMODADOR' && $Row['valor'] == $CA) {
+                    $Producto_Frecuencia_Ac*=$Row['ec'];
+            } else if ($Row['estilo'] == 'ASIMILADOR' && $Row['valor'] == $EC) {
+                    $Producto_Frecuencia_As*=$Row['ec'];
+            } else if ($Row['estilo'] == 'CONVERGENTE' && $Row['valor'] == $EC) {
+                    $Producto_Frecuencia_Co*=$Row['ec'];
+            } else if ($Row['estilo'] == 'DIVERGENTE' && $Row['valor'] == $EC) {
+                    $Producto_Frecuencia_Di*=$Row['ec'];
+            };
+            if ($Row['estilo'] == 'ACOMODADOR' && $Row['valor'] == $EA) {
+                    $Producto_Frecuencia_Ac*=$Row['ea'];
+            } else if ($Row['estilo'] == 'ASIMILADOR' && $Row['valor'] == $EA) {
+                    $Producto_Frecuencia_As*=$Row['ea'];
+            } else if ($Row['estilo'] == 'CONVERGENTE' && $Row['valor'] == $EA) {
+                    $Producto_Frecuencia_Co*=$Row['ea'];
+            } else if ($Row['estilo'] == 'DIVERGENTE' && $Row['valor'] == $EA) {
+                    $Producto_Frecuencia_Di*=$Row['ea'];
+            };
+            if ($Row['estilo'] == 'ACOMODADOR' && $Row['valor'] == $OR) {
+                    $Producto_Frecuencia_Ac*=$Row['or'];
+            } else if ($Row['estilo'] == 'ASIMILADOR' && $Row['valor'] == $OR) {
+                    $Producto_Frecuencia_As*=$Row['or'];
+            } else if ($Row['estilo'] == 'CONVERGENTE' && $Row['valor'] == $OR) {
+                    $Producto_Frecuencia_Co*=$Row['or'];
+            } else if ($Row['estilo'] == 'DIVERGENTE' && $Row['valor'] == $OR) {
+                    $Producto_Frecuencia_Di*=$Row['or'];
+            };
+    }
+    //sentencia if para determinar cual resultado es más probable
+    if ((($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_As*$Prior_prob_As))
+            && (($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_Co*$Prior_prob_Co))
+            && (($Producto_Frecuencia_Ac*$Prior_prob_Ac) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
+            $Estilo = 'Acomodador';
+    } else if ((($Producto_Frecuencia_As*$Prior_prob_As) > ($Producto_Frecuencia_Co*$Prior_prob_Co))
+            && (($Producto_Frecuencia_As*$Prior_prob_As) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
+            $Estilo = 'Asimilador';
+    } else if ((($Producto_Frecuencia_Co*$Prior_prob_Co) > ($Producto_Frecuencia_Di*$Prior_prob_Di))) {
+            $Estilo = 'Convergente';
+    } else {
+            $Estilo = 'Divergente';
+    };
 }
-
 ?>
 
 <main class="flex-shrink-0">
